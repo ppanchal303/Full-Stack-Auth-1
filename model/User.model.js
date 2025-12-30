@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import bcrypt from 'bcryptjs'
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
@@ -8,36 +8,40 @@ const userSchema = new mongoose.Schema(
     password: String,
     role: {
       type: String,
-      enum: ['user', 'admin'],
-      default: 'user'
+      enum: ["user", "admin"],
+      default: "user",
     },
     isVerified: {
       type: Boolean,
-      default: 'false'
+      default: "false",
     },
     verificationToken: String,
     resetPasswordToken: String,
-    resetPasswordTokenExpires: String,
+    resetPasswordTokenExpires: {
+      type: Date,
+    },
     status: {
       type: String,
-      enum: ['active', 'inactive'],
-      default: 'active'
-    }
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
-)
+);
 
 // pre save hook, similarly we can write post save hook
-userSchema.pre('save', async function (next) {
-  if (this.isModified('password')) {
-    const hashingSalt = await bcrypt.genSalt(parseInt(process.env.HASHING_SALT)) // fix here
-    this.password = await bcrypt.hash(this.password, hashingSalt)
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    const hashingSalt = await bcrypt.genSalt(
+      parseInt(process.env.HASHING_SALT)
+    ); // fix here
+    this.password = await bcrypt.hash(this.password, hashingSalt);
   }
-  next()
-})
+  next();
+});
 
-const User = mongoose.model('User', userSchema)
+const User = mongoose.model("User", userSchema);
 
-export default User
+export default User;
